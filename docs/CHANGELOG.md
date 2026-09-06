@@ -1,5 +1,6 @@
 # Changelog
 
+- 2026-09-06 — Daily crons + light mode fix: all jobs once-daily, class-based dark variant — see `changes/2026-09-06-daily-crons-light-mode.md`.
 - 2026-09-06 — Tracks A–D geek-grade: reliability, telemetry pipeline, epic graphs, motion system — see `changes/2026-09-06-tracks-a-d-geek-grade.md`.
 - 2026-09-06 — Phase 6 live timing + launch: gap tower, stints/weather, 429 hardening, loading/error, README runbook — see `changes/2026-09-06-phase-6-live-launch.md`.
 - 2026-09-06 — Phase 5 curated + admin: Postgres-gated tech updates, used elements, destructors + /admin entry + seed script — see `changes/2026-09-06-phase-5-curated-admin.md`.
