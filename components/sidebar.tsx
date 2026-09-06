@@ -19,6 +19,7 @@ const NAV = [
   { href: "/head-to-head", label: "Head To Head" },
   { href: "/consistency", label: "Consistency" },
   { href: "/race-pace", label: "Race Pace" },
+  { href: "/telemetry-lab", label: "Telemetry Lab" },
   { href: "/pit-stops", label: "Pit Stops" },
   { href: "/tech-updates", label: "Tech Updates" },
   { href: "/used-elements", label: "Used Elements" },

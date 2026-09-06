@@ -1,7 +1,7 @@
 import { cached, TTL } from "@/lib/cache";
 import { jolpica } from "@/lib/sources/jolpica";
 import { toPitStops, toRaceResults, toStandingRows } from "@/lib/normalize";
-import { getSeasonResults } from "@/lib/season-data";
+import { getSeasonResults, getSeasonRounds } from "@/lib/season-data";
 
 export interface HeadToHead {
   season: number;
@@ -122,6 +122,53 @@ export async function getDriverStats(season: number): Promise<{ season: number; 
       };
     });
     return { season, drivers };
+  });
+}
+
+export interface Progression {
+  season: number;
+  drivers: { id: string; code: string; color: string }[];
+  rounds: { round: number; name: string; points: Record<string, number> }[];
+}
+
+// Championship points progression for the current top 5, round by round.
+export async function getChampionshipProgression(season: number): Promise<Progression> {
+  return cached(`progression-${season}`, TTL.season, async () => {
+    const [finalRes, rounds] = await Promise.all([
+      jolpica.driverStandings(season),
+      getSeasonRounds(season),
+    ]);
+    const finalRows = toStandingRows(
+      finalRes.MRData.StandingsTable?.StandingsLists[0]?.DriverStandings,
+    );
+    const top = finalRows.slice(0, 5);
+    const colorOf = (teamId?: string) =>
+      teamId === "mercedes" ? "#27F4D2"
+      : teamId === "ferrari" ? "#E80020"
+      : teamId === "mclaren" ? "#FF8000"
+      : teamId === "red-bull-racing" ? "#3671C6"
+      : "#888888";
+    const perRound: Progression["rounds"] = [];
+    for (let i = 0; i < rounds.length; i += 5) {
+      const batch = await Promise.all(
+        rounds.slice(i, i + 5).map(async (r) => {
+          const res = await jolpica.driverStandingsRound(season, r.round).catch(() => null);
+          const rows = toStandingRows(res?.MRData.StandingsTable?.StandingsLists[0]?.DriverStandings);
+          const points: Record<string, number> = {};
+          for (const t of top) {
+            const row = rows.find((x) => x.id === t.id);
+            if (row) points[t.code ?? t.name] = row.points;
+          }
+          return { round: r.round, name: r.name, points };
+        }),
+      );
+      perRound.push(...batch);
+    }
+    return {
+      season,
+      drivers: top.map((t) => ({ id: t.id ?? "", code: t.code ?? "", color: colorOf(t.teamId) })),
+      rounds: perRound,
+    };
   });
 }
 

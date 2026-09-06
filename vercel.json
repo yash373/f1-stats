@@ -8,6 +8,10 @@
     {
       "path": "/api/cron/sync-weekend",
       "schedule": "*/15 * * * *"
+    },
+    {
+      "path": "/api/cron/sync-telemetry",
+      "schedule": "0 * * * *"
     }
   ]
 }

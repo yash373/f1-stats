@@ -6,6 +6,8 @@ import { teamColor } from "@/lib/team-colors";
 
 export const revalidate = 3600;
 
+export const metadata = { title: "2026 Teams" };
+
 export default async function TeamsPage() {
   let teams: StandingRow[] = [];
   try {

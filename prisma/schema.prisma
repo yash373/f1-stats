@@ -164,3 +164,56 @@ model Incident {
   note     String @default("")
   driver   Driver @relation(fields: [driverId], references: [id])
 }
+
+// ---- Telemetry (OpenF1, downsampled at ingest; see sync-telemetry cron) ----
+
+model RoundSession {
+  season      Int
+  roundNo     Int
+  sessionKey  Int
+  sessionName String // e.g. "Race", "Qualifying", "Sprint"
+
+  @@id([season, roundNo, sessionName])
+  @@index([sessionKey])
+}
+
+model Lap {
+  id           Int      @id @default(autoincrement())
+  sessionKey   Int
+  driverNumber Int
+  lapNumber    Int
+  duration     Float?
+  sector1      Float?
+  sector2      Float?
+  sector3      Float?
+  isPitOutLap  Boolean  @default(false)
+
+  @@unique([sessionKey, driverNumber, lapNumber])
+  @@index([sessionKey])
+}
+
+model CarDatum {
+  id           Int      @id @default(autoincrement())
+  sessionKey   Int
+  driverNumber Int
+  date         DateTime
+  speed        Int
+  throttle     Int
+  brake        Int
+  gear         Int
+  rpm          Int
+  drs          Int?
+
+  @@index([sessionKey, driverNumber, date])
+}
+
+model TrackPoint {
+  id           Int      @id @default(autoincrement())
+  sessionKey   Int
+  driverNumber Int
+  date         DateTime
+  x            Int
+  y            Int
+
+  @@index([sessionKey, driverNumber, date])
+}

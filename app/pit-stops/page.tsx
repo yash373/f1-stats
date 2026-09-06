@@ -5,6 +5,8 @@ import { teamColor } from "@/lib/team-colors";
 
 export const revalidate = 3600;
 
+export const metadata = { title: "Pit Stops" };
+
 export default async function PitStopsPage({
   searchParams,
 }: {

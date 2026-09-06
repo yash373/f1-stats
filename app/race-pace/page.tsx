@@ -4,6 +4,8 @@ import { RacePaceChart, type PaceRow } from "@/components/race-pace-chart";
 
 export const revalidate = 3600;
 
+export const metadata = { title: "Race Pace" };
+
 function median(values: number[]) {
   const s = [...values].sort((a, b) => a - b);
   const mid = Math.floor(s.length / 2);

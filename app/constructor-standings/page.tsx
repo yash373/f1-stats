@@ -5,6 +5,8 @@ import { toConstructorRows, type StandingRow } from "@/lib/normalize";
 
 export const revalidate = 3600;
 
+export const metadata = { title: "2026 Constructor Standings" };
+
 export default async function ConstructorStandingsPage() {
   let rows: StandingRow[] = [];
   try {

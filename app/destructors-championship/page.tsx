@@ -3,6 +3,8 @@ import { getIncidents } from "@/lib/curated";
 
 export const revalidate = 3600;
 
+export const metadata = { title: "Destructors Championship" };
+
 const fmt = (n: number) =>
   n.toLocaleString("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
 

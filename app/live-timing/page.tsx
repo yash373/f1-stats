@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { TrackMap } from "@/components/track-map";
 
 interface Session {
   session_key: number;
@@ -157,6 +158,19 @@ export default function LiveTimingPage() {
 
       {error && <p className="text-sm text-amber-600">Upstream error: {error}</p>}
 
+      <div className="grid gap-4 lg:grid-cols-2">
+        <div className="rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
+          <h2 className="mb-2 text-sm font-semibold uppercase text-zinc-500">Track map</h2>
+          <TrackMap
+            sessionKey={sessionKey === "latest" ? "latest" : Number(sessionKey)}
+            drivers={[...drivers.values()].map((d) => ({
+              driver_number: d.driver_number,
+              acronym: d.name_acronym,
+              color: d.team_colour ? `#${d.team_colour}` : "#888888",
+            }))}
+          />
+        </div>
+
       <div className="overflow-hidden rounded-xl border border-zinc-200 dark:border-zinc-800">
         <table className="w-full text-sm">
           <thead>
@@ -215,6 +229,7 @@ export default function LiveTimingPage() {
             )}
           </tbody>
         </table>
+      </div>
       </div>
       <p className="text-xs text-zinc-500">
         Positions/gaps poll every 5s; tyres/weather every 60s. Upstream OpenF1 has a ~3s broadcast delay.
