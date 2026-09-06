@@ -30,8 +30,9 @@ export async function findRaceSession(season: number, round: number): Promise<nu
 export async function listRaceSessions(season: number) {
   return cached(`race-sessions-${season}`, TTL.weekend, async () => {
     const sessions = await openf1.sessions(season);
+    const now = Date.now();
     return sessions
-      .filter((s) => s.session_name === "Race")
+      .filter((s) => s.session_name === "Race" && new Date(s.date_start).getTime() <= now)
       .map((s) => ({
         session_key: s.session_key,
         location: s.location,

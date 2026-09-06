@@ -1,7 +1,7 @@
 // Typed client for the OpenF1 API (live + 2023+ telemetry).
 // Docs: https://openf1.org — no key needed, generous free tier (3 req/s).
 
-import { fetchJson } from "@/lib/http";
+import { fetchJson, UpstreamError } from "@/lib/http";
 
 const BASE = process.env.OPENF1_BASE_URL ?? "https://api.openf1.org/v1";
 
@@ -12,11 +12,25 @@ async function get<T>(
 ): Promise<T> {
   const url = new URL(`${BASE}/${endpoint}`);
   for (const [k, v] of Object.entries(params)) url.searchParams.set(k, String(v));
-  return fetchJson<T>(url.toString(), {
-    headers: { Accept: "application/json" },
-    cache: "no-store",
-    timeoutMs,
-  });
+  // One retry for transient upstream failures (429/5xx) — these pages have no
+  // other data source, so a single hiccup shouldn't 502 the request.
+  try {
+    return await fetchJson<T>(url.toString(), {
+      headers: { Accept: "application/json" },
+      cache: "no-store",
+      timeoutMs,
+    });
+  } catch (e) {
+    if (e instanceof UpstreamError && (e.status === 429 || (e.status ?? 0) >= 500)) {
+      await new Promise((r) => setTimeout(r, 1500));
+      return fetchJson<T>(url.toString(), {
+        headers: { Accept: "application/json" },
+        cache: "no-store",
+        timeoutMs,
+      });
+    }
+    throw e;
+  }
 }
 
 export interface OpenF1Session {

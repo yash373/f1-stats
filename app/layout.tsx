@@ -22,11 +22,11 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  // `dark` is hardcoded while the theme is forced dark-only: first paint is
-  // correct with zero JS, and next-themes keeps it in sync afterwards.
-  // Remove when the light-mode rebuild reintroduces the toggle.
+  // Light is the default theme: no `dark` class, so light utilities apply on
+  // first paint with zero JS. The toggle stays hidden until dark mode is
+  // re-verified (see sidebar.tsx).
   return (
-    <html lang="en" suppressHydrationWarning className="dark h-full">
+    <html lang="en" suppressHydrationWarning className="h-full">
       <body className="min-h-full bg-zinc-50 text-zinc-900 dark:bg-black dark:text-zinc-50">
         <ThemeProvider>
           <MotionProvider>

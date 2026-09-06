@@ -150,6 +150,7 @@ export async function getChampionshipProgression(season: number): Promise<Progre
       : "#888888";
     const perRound: Progression["rounds"] = [];
     for (let i = 0; i < rounds.length; i += 5) {
+      if (i > 0) await new Promise((r) => setTimeout(r, 400));
       const batch = await Promise.all(
         rounds.slice(i, i + 5).map(async (r) => {
           const res = await jolpica.driverStandingsRound(season, r.round).catch(() => null);

@@ -39,11 +39,13 @@ export interface RoundResults {
 
 // All race + quali results for a season, cached as one blob.
 // Individual round fetches are also cached per round for reuse.
-// Rounds are fetched in small batches — a full parallel fan-out trips Jolpica's rate limiter.
+// Rounds are fetched in small batches with a short pause between them —
+// a full parallel fan-out trips Jolpica's rate limiter.
 export async function getSeasonResults(season: number): Promise<RoundResults[]> {
   const rounds = await getSeasonRounds(season);
   const out: RoundResults[] = [];
   for (let i = 0; i < rounds.length; i += 5) {
+    if (i > 0) await new Promise((r) => setTimeout(r, 400));
     const batch = await Promise.all(
       rounds.slice(i, i + 5).map(async (r) =>
         cached(`season-results-${season}-${r.round}`, TTL.season, async () => {

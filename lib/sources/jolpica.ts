@@ -15,9 +15,9 @@ async function get<T>(path: string, params: Record<string, string | number> = {}
   const url = new URL(`${BASE}${path}`);
   for (const [k, v] of Object.entries(params)) url.searchParams.set(k, String(v));
   // Jolpica rate-limits bursts (analytics pages fan out per round) — retry 429s with backoff.
-  // Waits are capped for serverless budgets: 3 attempts, max 3s each.
+  // Waits are capped for serverless budgets: 4 attempts, max 4s each.
   let lastError: Error = new UpstreamError(`Jolpica failed for ${url.pathname}`);
-  for (let attempt = 0; attempt < 3; attempt++) {
+  for (let attempt = 0; attempt < 4; attempt++) {
     try {
       return await fetchJson<T>(url.toString(), {
         headers: { "User-Agent": USER_AGENT, Accept: "application/json" },
@@ -28,7 +28,7 @@ async function get<T>(path: string, params: Record<string, string | number> = {}
     } catch (e) {
       if (e instanceof UpstreamError && e.status === 429) {
         lastError = new UpstreamError(`Jolpica 429 for ${url.pathname}`, 429);
-        await sleep(Math.min(e.retryAfterMs ?? 1000 * 2 ** attempt, 3000));
+        await sleep(Math.min(e.retryAfterMs ?? 1000 * 2 ** attempt, 4000));
         continue;
       }
       throw e;

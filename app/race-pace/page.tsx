@@ -18,14 +18,29 @@ export default async function RacePacePage() {
   let error: string | null = null;
   try {
     const sessions = await cached("openf1-sessions-2026", TTL.weekend, () => openf1.sessions(2026));
-    const races = sessions.filter((s) => s.session_name === "Race");
-    const latest = races[races.length - 1];
-    if (!latest) throw new Error("no race sessions found");
+    // OpenF1 lists future sessions with no data — walk back from the latest
+    // past race until one actually has laps.
+    const now = Date.now();
+    const races = sessions
+      .filter((s) => s.session_name === "Race" && new Date(s.date_start).getTime() <= now)
+      .sort((a, b) => +new Date(a.date_start) - +new Date(b.date_start));
+    let laps: Awaited<ReturnType<typeof openf1.laps>> = [];
+    let latest: (typeof races)[number] | undefined;
+    for (const candidate of races.slice(-4).reverse()) {
+      const fetched = await cached(`openf1-laps-${candidate.session_key}`, TTL.weekend, () =>
+        openf1.laps(candidate.session_key),
+      ).catch(() => []);
+      if (fetched.length > 0) {
+        laps = fetched;
+        latest = candidate;
+        break;
+      }
+    }
+    if (!latest) throw new Error("no race sessions with lap data found");
     sessionLabel = `${latest.location} — ${latest.session_name} (${latest.date_start.slice(0, 10)})`;
-    const [laps, drivers] = await Promise.all([
-      cached(`openf1-laps-${latest.session_key}`, TTL.weekend, () => openf1.laps(latest.session_key)),
-      cached(`openf1-drivers-${latest.session_key}`, TTL.weekend, () => openf1.drivers(latest.session_key)),
-    ]);
+    const drivers = await cached(`openf1-drivers-${latest.session_key}`, TTL.weekend, () =>
+      openf1.drivers(latest.session_key),
+    );
     const meta = new Map(drivers.map((d) => [d.driver_number, d]));
     const byDriver = new Map<number, number[]>();
     for (const lap of laps) {
