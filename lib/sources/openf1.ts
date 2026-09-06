@@ -44,6 +44,45 @@ export interface OpenF1Position {
   session_key: number;
 }
 
+export interface OpenF1Lap {
+  session_key: number;
+  driver_number: number;
+  lap_number: number;
+  lap_duration: number | null;
+  duration_sector_1: number | null;
+  duration_sector_2: number | null;
+  duration_sector_3: number | null;
+  is_pit_out_lap: boolean;
+}
+
+export interface OpenF1Stint {
+  session_key: number;
+  driver_number: number;
+  stint_number: number;
+  lap_start: number;
+  lap_end: number;
+  compound: string;
+  tyre_age_at_start: number;
+}
+
+export interface OpenF1Interval {
+  session_key: number;
+  driver_number: number;
+  gap_to_leader: number | null;
+  interval: number | null;
+  date: string;
+}
+
+export interface OpenF1Weather {
+  session_key: number;
+  date: string;
+  air_temperature: number;
+  track_temperature: number;
+  humidity: number;
+  rainfall: number;
+  wind_speed: number;
+}
+
 export const openf1 = {
   sessions: (year: number) => get<OpenF1Session[]>("sessions", { year }),
   session: (sessionKey: number | "latest") =>
@@ -52,4 +91,16 @@ export const openf1 = {
     get<OpenF1Driver[]>("drivers", { session_key: sessionKey }),
   positions: (sessionKey: number | "latest") =>
     get<OpenF1Position[]>("position", { session_key: sessionKey }),
+  laps: (sessionKey: number | "latest") =>
+    get<OpenF1Lap[]>("laps", { session_key: sessionKey }),
+  stints: (sessionKey: number | "latest") =>
+    get<OpenF1Stint[]>("stints", { session_key: sessionKey }),
+  // Intervals only return rows with an explicit date filter; pass dateAfter like "2026-09-06T12:00:00".
+  intervals: (sessionKey: number | "latest", dateAfter?: string) =>
+    get<OpenF1Interval[]>("intervals", {
+      session_key: sessionKey,
+      ...(dateAfter ? { date: `>${dateAfter}` } : {}),
+    }),
+  weather: (sessionKey: number | "latest") =>
+    get<OpenF1Weather[]>("weather", { session_key: sessionKey }),
 };

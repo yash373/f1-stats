@@ -141,3 +141,23 @@ export function toQualiResults(list: RawQuali[] | undefined): QualiResultRow[] {
     q3: r.Q3,
   }));
 }
+
+export interface PitStopRow {
+  driverId: string;
+  lap: number;
+  stop: number;
+  time: string;
+  duration: number;
+}
+
+export function toPitStops(
+  list: { driverId: string; lap: string; stop: string; time: string; duration: string }[] | undefined,
+): PitStopRow[] {
+  return (list ?? []).map((p) => ({
+    driverId: p.driverId,
+    lap: Number(p.lap),
+    stop: Number(p.stop),
+    time: p.time,
+    duration: Number(p.duration),
+  }));
+}
