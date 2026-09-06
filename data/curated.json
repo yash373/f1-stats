@@ -1,0 +1,9 @@
+{
+  "$comment": "Starter dataset for scripts/seed-curated.mjs. Arrays are intentionally empty: curated content (tech upgrades, PU elements, crash damage) has no open API and is entered via /admin. Each entry shape is documented below.",
+  "techUpgrades": [],
+  "_techUpgradeShape": { "season": 2026, "roundNo": 11, "teamId": "mercedes", "title": "New front wing" },
+  "powerUnitElements": [],
+  "_powerUnitElementShape": { "season": 2026, "driverId": "antonelli", "component": "ICE", "count": 2 },
+  "incidents": [],
+  "_incidentShape": { "season": 2026, "roundNo": 11, "driverId": "antonelli", "cost": 150000, "note": "Front wing damage" }
+}
