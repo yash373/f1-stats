@@ -52,6 +52,12 @@ export function AnimatedNumber({
     });
     return () => controls.stop();
   }, [inView, value]);
+  useEffect(() => {
+    // Fail-visible: if intersection observation never fires, show the final
+    // value instead of sticking at zero forever.
+    const id = setTimeout(() => setDisplay(formatRef.current(value)), 2000);
+    return () => clearTimeout(id);
+  }, [value]);
   return <span ref={ref}>{display}</span>;
 }
 
