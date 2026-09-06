@@ -1,4 +1,5 @@
 import type { StandingRow } from "@/lib/normalize";
+import { AnimatedNumber } from "@/lib/motion";
 
 export function StandingsTable({
   title,
@@ -33,7 +34,9 @@ export function StandingsTable({
                 {r.name}
                 {r.team ? <span className="text-zinc-500"> · {r.team}</span> : null}
               </td>
-              <td className="px-4 py-2 text-right font-medium">{r.points}</td>
+              <td className="px-4 py-2 text-right font-medium">
+                <AnimatedNumber value={r.points} />
+              </td>
             </tr>
           ))}
           {rows.length === 0 && (

@@ -19,15 +19,16 @@ async function getHomeData(season = 2026) {
       const teamRows: StandingRow[] = toConstructorRows(
         constructors.MRData.StandingsTable?.StandingsLists[0]?.ConstructorStandings,
       ).slice(0, 10);
-      return { driverRows, teamRows, live: true };
-    } catch {
-      return { driverRows: [], teamRows: [], live: false };
+      return { driverRows, teamRows, live: true, error: null as string | null };
+    } catch (e) {
+      // Surfaced in the UI badge so failures are diagnosable, not silent.
+      return { driverRows: [], teamRows: [], live: false, error: (e as Error).message };
     }
   });
 }
 
 export default async function Home() {
-  const { driverRows, teamRows, live } = await getHomeData();
+  const { driverRows, teamRows, live, error } = await getHomeData();
 
   return (
     <div className="space-y-6">
@@ -35,11 +36,13 @@ export default async function Home() {
         <h1 className="text-2xl font-bold">2026 Season Overview</h1>
         {!live && (
           <span className="rounded bg-amber-500/15 px-2 py-1 text-xs text-amber-600">
-            Upstream unavailable — showing cached/empty state
+            Upstream unavailable{error ? `: ${error}` : " — showing cached/empty state"}
           </span>
         )}
       </div>
 
+      {/* Static content: KPI cards and standings render without waiting on
+          client animation. Motion stays on non-critical flourishes only. */}
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-5">
         <KpiCard title="Schedule" value="52.2%" sub="Season completed" href="/schedule" />
         <KpiCard title="Fastest Pit Stop" value="1.99s" sub="Best of season" href="/pit-stops" />

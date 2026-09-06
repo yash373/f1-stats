@@ -158,6 +158,17 @@ export function toPitStops(
     lap: Number(p.lap),
     stop: Number(p.stop),
     time: p.time,
-    duration: Number(p.duration),
-  }));
+    duration: parseStopDuration(p.duration),
+  })).filter((p) => Number.isFinite(p.duration));
+}
+
+// Pit durations are usually seconds ("21.789") but red-flag-era stops come as
+// "m:ss.mmm" ("26:11.504") — Number() turns those into NaN and breaks every
+// average, sort and fastest computation downstream.
+export function parseStopDuration(s: string): number {
+  if (s.includes(":")) {
+    const [m, rest] = s.split(":");
+    return Number(m) * 60 + Number(rest);
+  }
+  return Number(s);
 }

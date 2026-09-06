@@ -4,6 +4,8 @@ import { jolpica } from "@/lib/sources/jolpica";
 
 export const revalidate = 3600;
 
+export const metadata = { title: "2026 Results" };
+
 export default async function ResultsPage() {
   let races: { round: number; name: string; date: string; circuit: string }[] = [];
   try {

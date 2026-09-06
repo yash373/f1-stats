@@ -5,6 +5,8 @@ import { DriverCard } from "@/components/driver-card";
 
 export const revalidate = 3600;
 
+export const metadata = { title: "2026 Drivers" };
+
 export default async function DriversPage() {
   let drivers: StandingRow[] = [];
   try {

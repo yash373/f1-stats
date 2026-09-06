@@ -5,16 +5,6 @@
 type CacheEntry = { value: unknown; expiresAt: number };
 const memory = new Map<string, CacheEntry>();
 
-function getMemory<T>(key: string): T | null {
-  const entry = memory.get(key);
-  if (!entry) return null;
-  if (Date.now() > entry.expiresAt) {
-    memory.delete(key);
-    return null;
-  }
-  return entry.value as T;
-}
-
 function setMemory(key: string, value: unknown, ttlSeconds: number) {
   memory.set(key, { value, expiresAt: Date.now() + ttlSeconds * 1000 });
   // Bound memory growth for long-running dev servers.
@@ -64,15 +54,22 @@ export async function cached<T>(
   ttlSeconds: number,
   fetcher: () => Promise<T>,
 ): Promise<T> {
-  const mem = getMemory<T>(key);
-  if (mem !== null) return mem;
+  const entry = memory.get(key);
+  if (entry && Date.now() <= entry.expiresAt) return entry.value as T;
   const remote = await getRedis<T>(key);
   if (remote !== null) {
     setMemory(key, remote, Math.min(ttlSeconds, 60));
     return remote;
   }
-  const fresh = await fetcher();
-  setMemory(key, fresh, ttlSeconds);
-  await setRedis(key, fresh, ttlSeconds);
-  return fresh;
+  try {
+    const fresh = await fetcher();
+    setMemory(key, fresh, ttlSeconds);
+    await setRedis(key, fresh, ttlSeconds);
+    return fresh;
+  } catch (e) {
+    // Stale-while-error: an expired entry is better than a blank page.
+    // Stale entries older than 7 days are purged instead of served.
+    if (entry && Date.now() - entry.expiresAt < 7 * 86400 * 1000) return entry.value as T;
+    throw e;
+  }
 }

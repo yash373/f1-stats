@@ -3,6 +3,8 @@ import { jolpica } from "@/lib/sources/jolpica";
 
 export const revalidate = 3600;
 
+export const metadata = { title: "2026 Schedule" };
+
 export default async function SchedulePage() {
   let races: { round: number; name: string; date: string; circuit: string }[] = [];
   try {

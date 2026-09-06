@@ -2,8 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useTheme } from "next-themes";
-import { Flag, Sun, Moon } from "lucide-react";
+import { Flag } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const NAV = [
@@ -19,6 +18,7 @@ const NAV = [
   { href: "/head-to-head", label: "Head To Head" },
   { href: "/consistency", label: "Consistency" },
   { href: "/race-pace", label: "Race Pace" },
+  { href: "/telemetry-lab", label: "Telemetry Lab" },
   { href: "/pit-stops", label: "Pit Stops" },
   { href: "/tech-updates", label: "Tech Updates" },
   { href: "/used-elements", label: "Used Elements" },
@@ -28,22 +28,15 @@ const NAV = [
 
 export function Sidebar() {
   const pathname = usePathname();
-  const { theme, setTheme } = useTheme();
 
   return (
     <aside className="flex w-60 shrink-0 flex-col border-r border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950">
-      <div className="flex items-center justify-between px-4 py-4">
+      <div className="flex items-center px-4 py-4">
         <Link href="/" className="flex items-center gap-2 font-semibold">
           <Flag className="h-5 w-5 text-red-600" />
           <span>F1 Dashboard</span>
         </Link>
-        <button
-          aria-label="Toggle theme"
-          onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-          className="rounded-md p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800"
-        >
-          {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-        </button>
+        {/* Theme toggle hidden until light mode is rebuilt (dark forced in theme-provider). */}
       </div>
       <nav className="flex-1 overflow-y-auto px-2 pb-4">
         {NAV.map((item) => {

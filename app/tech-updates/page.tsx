@@ -4,6 +4,8 @@ import { teamColor } from "@/lib/team-colors";
 
 export const revalidate = 3600;
 
+export const metadata = { title: "Tech Updates" };
+
 export default async function TechUpdatesPage() {
   const { available, rows } = await getTechUpgrades(2026);
 

@@ -6,6 +6,7 @@ import { getSeasonResults, type RoundResults } from "@/lib/season-data";
 import { teamColor } from "@/lib/team-colors";
 
 export const revalidate = 3600;
+export const maxDuration = 60;
 
 export default async function DriverPage({
   params,

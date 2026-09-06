@@ -1,7 +1,7 @@
 import { cached, TTL } from "@/lib/cache";
 import { jolpica } from "@/lib/sources/jolpica";
 import { toPitStops, toRaceResults, toStandingRows } from "@/lib/normalize";
-import { getSeasonResults } from "@/lib/season-data";
+import { getSeasonResults, getSeasonRounds } from "@/lib/season-data";
 
 export interface HeadToHead {
   season: number;
@@ -125,6 +125,53 @@ export async function getDriverStats(season: number): Promise<{ season: number; 
   });
 }
 
+export interface Progression {
+  season: number;
+  drivers: { id: string; code: string; color: string }[];
+  rounds: { round: number; name: string; points: Record<string, number> }[];
+}
+
+// Championship points progression for the current top 5, round by round.
+export async function getChampionshipProgression(season: number): Promise<Progression> {
+  return cached(`progression-${season}`, TTL.season, async () => {
+    const [finalRes, rounds] = await Promise.all([
+      jolpica.driverStandings(season),
+      getSeasonRounds(season),
+    ]);
+    const finalRows = toStandingRows(
+      finalRes.MRData.StandingsTable?.StandingsLists[0]?.DriverStandings,
+    );
+    const top = finalRows.slice(0, 5);
+    const colorOf = (teamId?: string) =>
+      teamId === "mercedes" ? "#27F4D2"
+      : teamId === "ferrari" ? "#E80020"
+      : teamId === "mclaren" ? "#FF8000"
+      : teamId === "red-bull-racing" ? "#3671C6"
+      : "#888888";
+    const perRound: Progression["rounds"] = [];
+    for (let i = 0; i < rounds.length; i += 5) {
+      const batch = await Promise.all(
+        rounds.slice(i, i + 5).map(async (r) => {
+          const res = await jolpica.driverStandingsRound(season, r.round).catch(() => null);
+          const rows = toStandingRows(res?.MRData.StandingsTable?.StandingsLists[0]?.DriverStandings);
+          const points: Record<string, number> = {};
+          for (const t of top) {
+            const row = rows.find((x) => x.id === t.id);
+            if (row) points[t.code ?? t.name] = row.points;
+          }
+          return { round: r.round, name: r.name, points };
+        }),
+      );
+      perRound.push(...batch);
+    }
+    return {
+      season,
+      drivers: top.map((t) => ({ id: t.id ?? "", code: t.code ?? "", color: colorOf(t.teamId) })),
+      rounds: perRound,
+    };
+  });
+}
+
 export interface PitStopData {
   season: number;
   round: number;
@@ -134,8 +181,27 @@ export interface PitStopData {
   teams: { teamId: string; team: string; stops: number; avg: number; best: number }[];
 }
 
-export async function getPitStops(season: number, round: number): Promise<PitStopData> {
-  return cached(`pitstops-${season}-${round}`, TTL.season, async () => {
+// Latest round with published pit-stop data. The schedule includes future
+// rounds, so defaulting to the last scheduled round lands on empty data.
+export async function getLatestRoundWithPitStops(season: number): Promise<number> {
+  return cached(`pitstops-latest-${season}`, TTL.season, async () => {
+    const rounds = await getSeasonRounds(season);
+    const past = rounds.filter((r) => new Date(r.date).getTime() <= Date.now());
+    const candidates = [...past.map((r) => r.round)].sort((a, b) => b - a);
+    for (const round of candidates) {
+      try {
+        const res = await jolpica.pitstops(season, round);
+        const stops = res.MRData.RaceTable?.Races[0]?.PitStops ?? [];
+        if (stops.length > 0) return round;
+      } catch {
+        // Keep walking back — a single failed round shouldn't block the page.
+      }
+    }
+    return candidates[0] ?? 1;
+  });
+}
+
+export async function getPitStops(season: number, round: number): Promise<PitStopData> {  return cached(`pitstops-${season}-${round}`, TTL.season, async () => {
     const [pitRes, raceRes] = await Promise.all([
       jolpica.pitstops(season, round),
       jolpica.results(season, round).catch(() => null),

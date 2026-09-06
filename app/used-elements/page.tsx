@@ -3,6 +3,8 @@ import { getPowerUnitElements } from "@/lib/curated";
 
 export const revalidate = 3600;
 
+export const metadata = { title: "Used Elements" };
+
 const LIMITS: Record<string, number> = { ICE: 4, TC: 4, "MGU-K": 4, ES: 2, CE: 2, EX: 8 };
 
 export default async function UsedElementsPage() {

@@ -1,9 +1,11 @@
 import Link from "next/link";
-import { getPitStops } from "@/lib/analytics";
+import { getLatestRoundWithPitStops, getPitStops } from "@/lib/analytics";
 import { getSeasonRounds } from "@/lib/season-data";
 import { teamColor } from "@/lib/team-colors";
 
 export const revalidate = 3600;
+
+export const metadata = { title: "Pit Stops" };
 
 export default async function PitStopsPage({
   searchParams,
@@ -12,7 +14,10 @@ export default async function PitStopsPage({
 }) {
   const params = await searchParams;
   const rounds = await getSeasonRounds(2026);
-  const round = Number(params.round ?? rounds[rounds.length - 1]?.round ?? 1);
+  // Default to the latest round with published data, not the last scheduled
+  // round (the calendar includes future races).
+  const latestWithData = await getLatestRoundWithPitStops(2026).catch(() => 1);
+  const round = Number(params.round ?? latestWithData);
 
   let data = null;
   try {
@@ -37,7 +42,14 @@ export default async function PitStopsPage({
       </div>
 
       {!data || data.stops.length === 0 ? (
-        <p className="text-sm text-zinc-500">No pit stop data for round {round} yet.</p>
+        <p className="text-sm text-zinc-500">
+          No pit stop data for round {round} yet.{" "}
+          {round !== latestWithData && (
+            <Link href={`/pit-stops?round=${latestWithData}`} className="text-red-600 hover:underline">
+              View round {latestWithData} (latest available)
+            </Link>
+          )}
+        </p>
       ) : (
         <>
           <p className="text-sm text-zinc-500">

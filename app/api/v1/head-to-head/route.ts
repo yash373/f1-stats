@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getHeadToHead } from "@/lib/analytics";
 
 export const revalidate = 3600;
+export const maxDuration = 60;
 
 // GET /api/v1/head-to-head?season=2026&d1=antonelli&d2=russell
 export async function GET(req: Request) {

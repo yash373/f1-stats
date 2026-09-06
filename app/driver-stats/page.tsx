@@ -4,6 +4,9 @@ import { teamColor } from "@/lib/team-colors";
 
 export const revalidate = 3600;
 
+export const metadata = { title: "Driver Stats" };
+export const maxDuration = 60;
+
 export default async function DriverStatsPage() {
   let drivers: DriverStat[] = [];
   try {

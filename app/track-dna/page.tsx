@@ -3,6 +3,9 @@ import { getSeasonResults, getSeasonRounds, type RoundResults, type SeasonRound 
 
 export const revalidate = 3600;
 
+export const metadata = { title: "Track DNA" };
+export const maxDuration = 60;
+
 export default async function TrackDnaPage() {
   let rounds: SeasonRound[] = [];
   let results: RoundResults[] = [];

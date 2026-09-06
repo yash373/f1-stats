@@ -6,6 +6,9 @@ import { getSeasonResults, type RoundResults } from "@/lib/season-data";
 
 export const revalidate = 3600;
 
+export const metadata = { title: "Consistency" };
+export const maxDuration = 60;
+
 function cellColor(pts: number) {
   if (pts >= 25) return "bg-red-600 text-white";
   if (pts >= 15) return "bg-red-500/70 text-white";

@@ -1,17 +1,22 @@
 // Typed client for the OpenF1 API (live + 2023+ telemetry).
 // Docs: https://openf1.org — no key needed, generous free tier (3 req/s).
 
+import { fetchJson } from "@/lib/http";
+
 const BASE = process.env.OPENF1_BASE_URL ?? "https://api.openf1.org/v1";
 
-async function get<T>(endpoint: string, params: Record<string, string | number | boolean> = {}): Promise<T> {
+async function get<T>(
+  endpoint: string,
+  params: Record<string, string | number | boolean> = {},
+  timeoutMs = 10000,
+): Promise<T> {
   const url = new URL(`${BASE}/${endpoint}`);
   for (const [k, v] of Object.entries(params)) url.searchParams.set(k, String(v));
-  const res = await fetch(url.toString(), {
+  return fetchJson<T>(url.toString(), {
     headers: { Accept: "application/json" },
     cache: "no-store",
+    timeoutMs,
   });
-  if (!res.ok) throw new Error(`OpenF1 ${res.status} for ${endpoint}`);
-  return (await res.json()) as T;
 }
 
 export interface OpenF1Session {
@@ -83,6 +88,26 @@ export interface OpenF1Weather {
   wind_speed: number;
 }
 
+export interface OpenF1CarDatum {
+  session_key: number;
+  driver_number: number;
+  date: string;
+  speed: number;
+  throttle: number;
+  brake: number;
+  n_gear: number;
+  rpm: number;
+  drs: number | null;
+}
+
+export interface OpenF1TrackPoint {
+  session_key: number;
+  driver_number: number;
+  date: string;
+  x: number;
+  y: number;
+}
+
 export const openf1 = {
   sessions: (year: number) => get<OpenF1Session[]>("sessions", { year }),
   session: (sessionKey: number | "latest") =>
@@ -103,4 +128,14 @@ export const openf1 = {
     }),
   weather: (sessionKey: number | "latest") =>
     get<OpenF1Weather[]>("weather", { session_key: sessionKey }),
+  carData: (sessionKey: number, driverNumber?: number) =>
+    get<OpenF1CarDatum[]>("car_data", {
+      session_key: sessionKey,
+      ...(driverNumber !== undefined ? { driver_number: driverNumber } : {}),
+    }),
+  location: (sessionKey: number, driverNumber?: number, timeoutMs = 60000) =>
+    get<OpenF1TrackPoint[]>("location", {
+      session_key: sessionKey,
+      ...(driverNumber !== undefined ? { driver_number: driverNumber } : {}),
+    }, timeoutMs),
 };

@@ -1,6 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { TrackMap } from "@/components/track-map";
+import { motion } from "@/lib/motion";
 
 interface Session {
   session_key: number;
@@ -84,17 +86,27 @@ export default function LiveTimingPage() {
     setWeather(w.weather);
   }, []);
 
-  const pollFast = useCallback(async (key: string) => {
-    const [p, iv] = await Promise.all([
-      fetchJson<{ positions: Position[] }>(`/api/v1/live?resource=positions&session_key=${key}`),
-      fetchJson<{ intervals: Interval[] }>(`/api/v1/live?resource=intervals&session_key=${key}`),
-    ]);
-    setPositions(p.positions ?? []);
-    const latest = new Map<number, Interval>();
-    for (const row of iv.intervals ?? []) latest.set(row.driver_number, row);
-    setIntervals(latest);
-    setError(null);
-  }, []);
+  const pollFast = useCallback(
+    async (key: string) => {
+      // Completed sessions have no data in the last 2 minutes, so anchor the
+      // intervals window at the session start instead of "now".
+      const session = sessions.find((s) => String(s.session_key) === key);
+      const dateAfter =
+        session && key !== "latest" ? `&date_after=${encodeURIComponent(session.date_start)}` : "";
+      const [p, iv] = await Promise.all([
+        fetchJson<{ positions: Position[] }>(`/api/v1/live?resource=positions&session_key=${key}`),
+        fetchJson<{ intervals: Interval[] }>(
+          `/api/v1/live?resource=intervals&session_key=${key}${dateAfter}`,
+        ),
+      ]);
+      setPositions(p.positions ?? []);
+      const latest = new Map<number, Interval>();
+      for (const row of iv.intervals ?? []) latest.set(row.driver_number, row);
+      setIntervals(latest);
+      setError(null);
+    },
+    [sessions],
+  );
 
   useEffect(() => {
     fetchJson<{ sessions: Session[] }>("/api/v1/live?year=2026")
@@ -127,6 +139,13 @@ export default function LiveTimingPage() {
     .sort((a, b) => a.position - b.position)
     .slice(0, 22);
 
+  // /api/v1/track only accepts numeric keys — resolve "latest" from the
+  // session list, otherwise the map 400s and spins forever.
+  const trackKey =
+    sessionKey === "latest"
+      ? (sessions[sessions.length - 1]?.session_key ?? "latest")
+      : Number(sessionKey);
+
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center gap-3">
@@ -157,6 +176,19 @@ export default function LiveTimingPage() {
 
       {error && <p className="text-sm text-amber-600">Upstream error: {error}</p>}
 
+      <div className="grid gap-4 lg:grid-cols-2">
+        <div className="rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
+          <h2 className="mb-2 text-sm font-semibold uppercase text-zinc-500">Track map</h2>
+          <TrackMap
+            sessionKey={trackKey}
+            drivers={[...drivers.values()].map((d) => ({
+              driver_number: d.driver_number,
+              acronym: d.name_acronym,
+              color: d.team_colour ? `#${d.team_colour}` : "#888888",
+            }))}
+          />
+        </div>
+
       <div className="overflow-hidden rounded-xl border border-zinc-200 dark:border-zinc-800">
         <table className="w-full text-sm">
           <thead>
@@ -174,7 +206,12 @@ export default function LiveTimingPage() {
               const iv = intervals.get(p.driver_number);
               const st = stints.get(p.driver_number);
               return (
-                <tr key={p.driver_number} className="border-t border-zinc-100 dark:border-zinc-800">
+                <motion.tr
+                  key={p.driver_number}
+                  layout
+                  transition={{ type: "spring", stiffness: 350, damping: 32 }}
+                  className="border-t border-zinc-100 dark:border-zinc-800"
+                >
                   <td className="px-4 py-2 font-medium">{p.position}</td>
                   <td className="px-4 py-2">
                     <span
@@ -203,7 +240,7 @@ export default function LiveTimingPage() {
                       <span className="text-zinc-500">–</span>
                     )}
                   </td>
-                </tr>
+                </motion.tr>
               );
             })}
             {tower.length === 0 && !error && (
@@ -215,6 +252,7 @@ export default function LiveTimingPage() {
             )}
           </tbody>
         </table>
+      </div>
       </div>
       <p className="text-xs text-zinc-500">
         Positions/gaps poll every 5s; tyres/weather every 60s. Upstream OpenF1 has a ~3s broadcast delay.
