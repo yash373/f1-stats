@@ -40,3 +40,24 @@ export async function listRaceSessions(season: number) {
       }));
   });
 }
+
+// Latest started session of the year (any type), excluding future entries.
+// The OpenF1 `session_key=latest` alias 404s on positions/intervals, so every
+// consumer resolves through here to a numeric key instead.
+export async function resolveLatestSession(year?: number): Promise<number | null> {
+  const y = year ?? new Date().getUTCFullYear();
+  return cached(`latest-session-${y}`, TTL.weekend, async () => {
+    const sessions = await openf1.sessions(y).catch(() => []);
+    const now = Date.now();
+    let best: number | null = null;
+    let bestStart = -Infinity;
+    for (const s of sessions) {
+      const start = new Date(s.date_start).getTime();
+      if (start <= now && start > bestStart) {
+        bestStart = start;
+        best = s.session_key;
+      }
+    }
+    return best;
+  });
+}

@@ -110,7 +110,23 @@ export default function LiveTimingPage() {
 
   useEffect(() => {
     fetchJson<{ sessions: Session[] }>("/api/v1/live?year=2026")
-      .then((j) => setSessions(j.sessions ?? []))
+      .then((j) => {
+        const list = j.sessions ?? [];
+        setSessions(list);
+        // Default to the latest started session (numeric) — the OpenF1
+        // `latest` alias 404s on positions/intervals, and a numeric key lets
+        // gap anchoring below apply.
+        setSessionKey((cur) => {
+          if (cur !== "latest") return cur;
+          const now = Date.now();
+          let best: Session | null = null;
+          for (const s of list) {
+            const start = new Date(s.date_start).getTime();
+            if (start <= now && (!best || start > new Date(best.date_start).getTime())) best = s;
+          }
+          return best ? String(best.session_key) : cur;
+        });
+      })
       .catch((e) => setError((e as Error).message));
   }, []);
 
