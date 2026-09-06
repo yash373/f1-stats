@@ -25,7 +25,10 @@ export function TrackMap({
 }) {
   const [tracks, setTracks] = useState<TrackDriver[]>([]);
   const [tick, setTick] = useState(0);
+  const [state, setState] = useState<"loading" | "ready" | "empty" | "error">("loading");
 
+  // NOTE: callers pass key={sessionKey} so a session switch remounts with
+  // fresh state instead of resetting inside this effect.
   useEffect(() => {
     let alive = true;
     fetch(`/api/v1/track?session_key=${sessionKey}`)
@@ -34,9 +37,18 @@ export function TrackMap({
         return r.json();
       })
       .then((j) => {
-        if (alive) setTracks(j.drivers ?? []);
+        if (!alive) return;
+        const drivers = (j.drivers ?? []) as TrackDriver[];
+        if (j.coverage === false || drivers.length === 0) {
+          setState("empty");
+        } else {
+          setTracks(drivers);
+          setState("ready");
+        }
       })
-      .catch(() => {});
+      .catch(() => {
+        if (alive) setState("error");
+      });
     return () => {
       alive = false;
     };
@@ -66,7 +78,13 @@ export function TrackMap({
     return { minX, maxX, minY, maxY };
   }, [tracks]);
 
-  if (!bounds || tracks.length === 0) {
+  if (state === "error") {
+    return <p className="text-sm text-amber-600">Track data failed to load — try another session.</p>;
+  }
+  if (state === "empty") {
+    return <p className="text-sm text-zinc-500">No track location data published for this session.</p>;
+  }
+  if (state === "loading" || !bounds || tracks.length === 0) {
     return <p className="text-sm text-zinc-500">Loading track map…</p>;
   }
 
@@ -75,7 +93,11 @@ export function TrackMap({
   const pad = 30;
   const sx = (x: number) => pad + ((x - bounds.minX) / (bounds.maxX - bounds.minX || 1)) * (W - pad * 2);
   const sy = (y: number) => pad + ((y - bounds.minY) / (bounds.maxY - bounds.minY || 1)) * (H - pad * 2);
-  const outline = tracks[0]?.points ?? [];
+  // Outline from the driver with the most points (first entry may be sparse).
+  const outline = tracks.reduce<TrackDriver["points"]>(
+    (best, t) => (t.points.length > best.length ? t.points : best),
+    [],
+  );
 
   return (
     <svg viewBox={`0 0 ${W} ${H}`} className="w-full" style={{ height }}>

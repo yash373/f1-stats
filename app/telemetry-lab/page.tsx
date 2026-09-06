@@ -118,7 +118,7 @@ export default async function TelemetryLabPage({
               <section className="space-y-2">
                 <h2 className="text-lg font-semibold">Track replay</h2>
                 <div className="rounded-xl border border-zinc-200 bg-white p-4">
-                  <TrackMap sessionKey={sessionKey} drivers={drivers} />
+                  <TrackMap key={sessionKey} sessionKey={sessionKey} drivers={drivers} />
                 </div>
               </section>
             </>

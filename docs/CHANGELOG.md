@@ -1,5 +1,6 @@
 # Changelog
 
+- 2026-09-06 — Track map coverage fix: explicit empty/error states, coverage flag — see `changes/2026-09-06-track-map-coverage.md`.
 - 2026-09-06 — Full light-mode conversion: dark variants and theme machinery removed — see `changes/2026-09-06-full-light-mode.md`.
 - 2026-09-06 — Light mode default + full data verification: 74-check harness, future-session and burst fixes — see `changes/2026-09-06-light-mode-data-verification.md`.
 - 2026-09-06 — Hardcoded dark class for reliable first paint — see `changes/2026-09-06-hardcoded-dark-class.md`.

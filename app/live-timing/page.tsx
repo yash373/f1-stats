@@ -180,6 +180,7 @@ export default function LiveTimingPage() {
         <div className="rounded-xl border border-zinc-200 bg-white p-4">
           <h2 className="mb-2 text-sm font-semibold uppercase text-zinc-500">Track map</h2>
           <TrackMap
+            key={String(trackKey)}
             sessionKey={trackKey}
             drivers={[...drivers.values()].map((d) => ({
               driver_number: d.driver_number,
