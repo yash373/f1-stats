@@ -1,0 +1,166 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Canonical F1 data model. Jolpica (history) + OpenF1 (live) both upsert here.
+// Curated tables (TechUpgrade, PowerUnitElement, Incident) are manual via /admin.
+
+model Season {
+  year   Int     @id
+  rounds Round[]
+}
+
+model Circuit {
+  id      String  @id // jolpica circuitId, e.g. "monza"
+  name    String
+  country String
+  rounds  Round[]
+}
+
+model Team {
+  id          String       @id // jolpica constructorId, e.g. "mercedes"
+  name        String
+  color       String       @default("#888888")
+  seats       DriverSeat[]
+  upgrades    TechUpgrade[]
+  constructorStandings ConstructorStanding[]
+}
+
+model Driver {
+  id          String       @id // jolpica driverId, e.g. "antonelli"
+  code        String       // e.g. "ANT"
+  number      Int?
+  firstName   String
+  lastName    String
+  nationality String
+  rookie      Boolean      @default(false)
+  seats       DriverSeat[]
+  results     SessionResult[]
+  standings   DriverStanding[]
+  elements    PowerUnitElement[]
+  incidents   Incident[]
+}
+
+model DriverSeat {
+  driverId String
+  teamId   String
+  season   Int
+  driver   Driver @relation(fields: [driverId], references: [id])
+  team     Team   @relation(fields: [teamId], references: [id])
+
+  @@id([driverId, teamId, season])
+}
+
+model Round {
+  id            Int      @id @default(autoincrement())
+  season        Int
+  roundNo       Int
+  name          String
+  date          DateTime
+  sprintWeekend Boolean  @default(false)
+  seasonRef     Season   @relation(fields: [season], references: [year])
+  circuitId     String
+  circuit       Circuit  @relation(fields: [circuitId], references: [id])
+  sessions      Session[]
+
+  @@unique([season, roundNo])
+}
+
+model Session {
+  id       Int            @id @default(autoincrement())
+  roundId  Int
+  type     String // FP1 | FP2 | FP3 | Q | SQ | SR | R
+  openf1Key Int?
+  round    Round          @relation(fields: [roundId], references: [id])
+  results  SessionResult[]
+  pitStops PitStop[]
+
+  @@unique([roundId, type])
+}
+
+model SessionResult {
+  id        Int     @id @default(autoincrement())
+  sessionId Int
+  driverId  String
+  position  Int?
+  points    Float   @default(0)
+  grid      Int?
+  laps      Int?
+  status    String?
+  session   Session @relation(fields: [sessionId], references: [id])
+  driver    Driver  @relation(fields: [driverId], references: [id])
+
+  @@unique([sessionId, driverId])
+}
+
+model PitStop {
+  id        Int     @id @default(autoincrement())
+  sessionId Int
+  driverId  String
+  lap       Int
+  duration  Float
+  session   Session @relation(fields: [sessionId], references: [id])
+}
+
+model DriverStanding {
+  id       Int    @id @default(autoincrement())
+  season   Int
+  roundNo  Int    @default(0) // 0 = latest
+  driverId String
+  position Int
+  points   Float
+  wins     Int    @default(0)
+  driver   Driver @relation(fields: [driverId], references: [id])
+
+  @@unique([season, roundNo, driverId])
+}
+
+model ConstructorStanding {
+  id       Int    @id @default(autoincrement())
+  season   Int
+  roundNo  Int    @default(0)
+  teamId   String
+  position Int
+  points   Float
+  wins     Int    @default(0)
+  team     Team   @relation(fields: [teamId], references: [id])
+
+  @@unique([season, roundNo, teamId])
+}
+
+// ---- Curated (no open API; entered via /admin form) ----
+
+model TechUpgrade {
+  id     Int    @id @default(autoincrement())
+  season Int
+  roundNo Int
+  teamId String
+  title  String
+  team   Team   @relation(fields: [teamId], references: [id])
+}
+
+model PowerUnitElement {
+  id        Int    @id @default(autoincrement())
+  season    Int
+  driverId  String
+  component String // ICE | TC | MGU-K | MGU-H | ES | CE | EX
+  count     Int    @default(0)
+  driver    Driver @relation(fields: [driverId], references: [id])
+
+  @@unique([season, driverId, component])
+}
+
+model Incident {
+  id       Int    @id @default(autoincrement())
+  season   Int
+  roundNo  Int
+  driverId String
+  cost     Int    @default(0) // USD, for destructors championship
+  note     String @default("")
+  driver   Driver @relation(fields: [driverId], references: [id])
+}

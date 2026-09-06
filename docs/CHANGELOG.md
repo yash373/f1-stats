@@ -1,0 +1,3 @@
+# Changelog
+
+- 2026-09-06 — Phase 1+2 scaffold: Next.js full-stack shell, Prisma schema, Jolpica/OpenF1 clients, v1 API + cron, 17 pages — see `changes/2026-09-06-phase-1-2-scaffold.md`.
