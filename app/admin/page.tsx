@@ -4,7 +4,7 @@ import { addIncident, addTechUpgrade, setPowerUnitElement } from "./actions";
 export const revalidate = 0;
 
 const input =
-  "rounded-md border border-zinc-300 bg-white px-2 py-1 text-sm dark:border-zinc-700 dark:bg-zinc-900";
+  "rounded-md border border-zinc-300 bg-white px-2 py-1 text-sm";
 
 export default function AdminPage() {
   const dbReady = isDbConfigured();
@@ -33,7 +33,7 @@ export default function AdminPage() {
         </p>
       </div>
 
-      <form action={addTechUpgrade} className="space-y-2 rounded-xl border border-zinc-200 p-4 dark:border-zinc-800">
+      <form action={addTechUpgrade} className="space-y-2 rounded-xl border border-zinc-200 p-4">
         <h2 className="font-semibold">Tech upgrade</h2>
         <div className="grid grid-cols-2 gap-2">
           <input name="secret" type="password" placeholder="Admin secret" className={input} required />
@@ -45,7 +45,7 @@ export default function AdminPage() {
         <button className="rounded-md bg-red-600 px-3 py-1.5 text-sm text-white">Add upgrade</button>
       </form>
 
-      <form action={setPowerUnitElement} className="space-y-2 rounded-xl border border-zinc-200 p-4 dark:border-zinc-800">
+      <form action={setPowerUnitElement} className="space-y-2 rounded-xl border border-zinc-200 p-4">
         <h2 className="font-semibold">Power-unit element (upsert)</h2>
         <div className="grid grid-cols-2 gap-2">
           <input name="secret" type="password" placeholder="Admin secret" className={input} required />
@@ -57,7 +57,7 @@ export default function AdminPage() {
         <button className="rounded-md bg-red-600 px-3 py-1.5 text-sm text-white">Set element</button>
       </form>
 
-      <form action={addIncident} className="space-y-2 rounded-xl border border-zinc-200 p-4 dark:border-zinc-800">
+      <form action={addIncident} className="space-y-2 rounded-xl border border-zinc-200 p-4">
         <h2 className="font-semibold">Incident (destructors)</h2>
         <div className="grid grid-cols-2 gap-2">
           <input name="secret" type="password" placeholder="Admin secret" className={input} required />

@@ -68,7 +68,7 @@ export default async function TelemetryLabPage({
             <Link
               key={s.session_key}
               href={link("session", s.session_key)}
-              className={`rounded px-2 py-1 text-xs ${s.session_key === sessionKey ? "bg-red-600 text-white" : "bg-zinc-200 dark:bg-zinc-800"}`}
+              className={`rounded px-2 py-1 text-xs ${s.session_key === sessionKey ? "bg-red-600 text-white" : "bg-zinc-200"}`}
             >
               {s.location}
             </Link>
@@ -89,7 +89,7 @@ export default async function TelemetryLabPage({
                     <Link
                       key={d.driver_number}
                       href={link(key, d.driver_number)}
-                      className={`rounded px-2 py-1 font-mono text-xs ${d.driver_number === (key === "a" ? a : b) ? "bg-red-600 text-white" : "bg-zinc-200 dark:bg-zinc-800"}`}
+                      className={`rounded px-2 py-1 font-mono text-xs ${d.driver_number === (key === "a" ? a : b) ? "bg-red-600 text-white" : "bg-zinc-200"}`}
                     >
                       {d.acronym}
                     </Link>
@@ -105,19 +105,19 @@ export default async function TelemetryLabPage({
                 <h2 className="text-lg font-semibold">
                   Speed traces — {pair.map((d) => d.acronym).join(" vs ")}
                 </h2>
-                <div className="rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
+                <div className="rounded-xl border border-zinc-200 bg-white p-4">
                   <TelemetryTraces sessionKey={sessionKey} drivers={pair} />
                 </div>
               </section>
               <section className="space-y-2">
                 <h2 className="text-lg font-semibold">Position history</h2>
-                <div className="rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
+                <div className="rounded-xl border border-zinc-200 bg-white p-4">
                   <LapChart sessionKey={sessionKey} drivers={drivers} />
                 </div>
               </section>
               <section className="space-y-2">
                 <h2 className="text-lg font-semibold">Track replay</h2>
-                <div className="rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
+                <div className="rounded-xl border border-zinc-200 bg-white p-4">
                   <TrackMap sessionKey={sessionKey} drivers={drivers} />
                 </div>
               </section>

@@ -27,7 +27,7 @@ export default async function TeamsPage() {
           <Link
             key={t.id ?? t.name}
             href={`/teams/${t.id}`}
-            className="rounded-xl border border-zinc-200 bg-white p-4 hover:border-red-600/50 dark:border-zinc-800 dark:bg-zinc-900"
+            className="rounded-xl border border-zinc-200 bg-white p-4 hover:border-red-600/50"
           >
             <div className="flex items-center gap-2">
               <span

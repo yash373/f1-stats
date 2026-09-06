@@ -31,7 +31,7 @@ export default async function UsedElementsPage() {
       ) : (
         <div className="grid gap-3 md:grid-cols-2">
           {[...byDriver.values()].map((d) => (
-            <div key={d.driverId} className="rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
+            <div key={d.driverId} className="rounded-xl border border-zinc-200 bg-white p-4">
               <Link href={`/drivers/${d.driverId}`} className="font-semibold hover:underline">
                 {d.driver}
               </Link>
@@ -42,7 +42,7 @@ export default async function UsedElementsPage() {
                   return (
                     <div key={p.component} className="flex items-center gap-2 text-sm">
                       <span className="w-16 font-mono">{p.component}</span>
-                      <div className="h-2 flex-1 overflow-hidden rounded bg-zinc-200 dark:bg-zinc-800">
+                      <div className="h-2 flex-1 overflow-hidden rounded bg-zinc-200">
                         <div
                           className={`h-full ${over ? "bg-red-600" : "bg-green-600"}`}
                           style={{ width: `${limit > 0 ? Math.min(100, (p.count / limit) * 100) : 0}%` }}

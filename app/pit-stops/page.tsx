@@ -34,7 +34,7 @@ export default async function PitStopsPage({
           <Link
             key={r.round}
             href={`/pit-stops?round=${r.round}`}
-            className={`rounded px-2 py-1 text-xs ${r.round === round ? "bg-red-600 text-white" : "bg-zinc-200 dark:bg-zinc-800"}`}
+            className={`rounded px-2 py-1 text-xs ${r.round === round ? "bg-red-600 text-white" : "bg-zinc-200"}`}
           >
             R{r.round}
           </Link>
@@ -57,7 +57,7 @@ export default async function PitStopsPage({
           </p>
           <section className="space-y-2">
             <h2 className="text-lg font-semibold">Team averages</h2>
-            <div className="overflow-hidden rounded-xl border border-zinc-200 dark:border-zinc-800">
+            <div className="overflow-hidden rounded-xl border border-zinc-200">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="text-left text-xs uppercase text-zinc-500">
@@ -69,7 +69,7 @@ export default async function PitStopsPage({
                 </thead>
                 <tbody>
                   {data.teams.map((t) => (
-                    <tr key={t.teamId} className="border-t border-zinc-100 dark:border-zinc-800">
+                    <tr key={t.teamId} className="border-t border-zinc-100">
                       <td className="px-4 py-2">
                         <span className="mr-2 inline-block h-3 w-1 rounded" style={{ background: teamColor(t.teamId) }} />
                         <Link href={`/teams/${t.teamId}`} className="hover:underline">{t.team}</Link>
@@ -85,7 +85,7 @@ export default async function PitStopsPage({
           </section>
           <section className="space-y-2">
             <h2 className="text-lg font-semibold">All stops</h2>
-            <div className="overflow-hidden rounded-xl border border-zinc-200 dark:border-zinc-800">
+            <div className="overflow-hidden rounded-xl border border-zinc-200">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="text-left text-xs uppercase text-zinc-500">
@@ -97,7 +97,7 @@ export default async function PitStopsPage({
                 </thead>
                 <tbody>
                   {[...data.stops].sort((a, b) => a.duration - b.duration).map((s, i) => (
-                    <tr key={`${s.driverId}-${s.stop}-${i}`} className="border-t border-zinc-100 dark:border-zinc-800">
+                    <tr key={`${s.driverId}-${s.stop}-${i}`} className="border-t border-zinc-100">
                       <td className="px-4 py-2">
                         <Link href={`/drivers/${s.driverId}`} className="hover:underline">{s.driver}</Link>{" "}
                         <span className="text-xs text-zinc-500">{s.code}</span>

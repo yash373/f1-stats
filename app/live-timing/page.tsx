@@ -153,7 +153,7 @@ export default function LiveTimingPage() {
         <select
           value={sessionKey}
           onChange={(e) => setSessionKey(e.target.value)}
-          className="rounded-md border border-zinc-300 bg-white px-2 py-1 text-sm dark:border-zinc-700 dark:bg-zinc-900"
+          className="rounded-md border border-zinc-300 bg-white px-2 py-1 text-sm"
         >
           <option value="latest">Latest session</option>
           {sessions.map((s) => (
@@ -165,7 +165,7 @@ export default function LiveTimingPage() {
       </div>
 
       {weather && (
-        <div className="flex flex-wrap gap-4 rounded-xl border border-zinc-200 bg-white p-3 text-sm dark:border-zinc-800 dark:bg-zinc-900">
+        <div className="flex flex-wrap gap-4 rounded-xl border border-zinc-200 bg-white p-3 text-sm">
           <span>Air {weather.air_temperature.toFixed(1)}°C</span>
           <span>Track {weather.track_temperature.toFixed(1)}°C</span>
           <span>Humidity {weather.humidity.toFixed(0)}%</span>
@@ -177,7 +177,7 @@ export default function LiveTimingPage() {
       {error && <p className="text-sm text-amber-600">Upstream error: {error}</p>}
 
       <div className="grid gap-4 lg:grid-cols-2">
-        <div className="rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
+        <div className="rounded-xl border border-zinc-200 bg-white p-4">
           <h2 className="mb-2 text-sm font-semibold uppercase text-zinc-500">Track map</h2>
           <TrackMap
             sessionKey={trackKey}
@@ -189,7 +189,7 @@ export default function LiveTimingPage() {
           />
         </div>
 
-      <div className="overflow-hidden rounded-xl border border-zinc-200 dark:border-zinc-800">
+      <div className="overflow-hidden rounded-xl border border-zinc-200">
         <table className="w-full text-sm">
           <thead>
             <tr className="text-left text-xs uppercase text-zinc-500">
@@ -210,7 +210,7 @@ export default function LiveTimingPage() {
                   key={p.driver_number}
                   layout
                   transition={{ type: "spring", stiffness: 350, damping: 32 }}
-                  className="border-t border-zinc-100 dark:border-zinc-800"
+                  className="border-t border-zinc-100"
                 >
                   <td className="px-4 py-2 font-medium">{p.position}</td>
                   <td className="px-4 py-2">

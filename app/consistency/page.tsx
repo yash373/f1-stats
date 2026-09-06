@@ -14,7 +14,7 @@ function cellColor(pts: number) {
   if (pts >= 15) return "bg-red-500/70 text-white";
   if (pts >= 10) return "bg-orange-500/60";
   if (pts >= 1) return "bg-yellow-500/40";
-  return "bg-zinc-100 dark:bg-zinc-800";
+  return "bg-zinc-100";
 }
 
 export default async function ConsistencyPage() {
@@ -33,7 +33,7 @@ export default async function ConsistencyPage() {
     <div className="space-y-4">
       <h1 className="text-2xl font-bold">2026 Consistency</h1>
       <p className="text-sm text-zinc-500">Points scored per round — darker means more points.</p>
-      <div className="overflow-x-auto rounded-xl border border-zinc-200 dark:border-zinc-800">
+      <div className="overflow-x-auto rounded-xl border border-zinc-200">
         <table className="w-full text-sm">
           <thead>
             <tr className="text-left text-xs uppercase text-zinc-500">
@@ -47,7 +47,7 @@ export default async function ConsistencyPage() {
           </thead>
           <tbody>
             {drivers.map((d) => (
-              <tr key={d.id} className="border-t border-zinc-100 dark:border-zinc-800">
+              <tr key={d.id} className="border-t border-zinc-100">
                 <td className="px-4 py-2">
                   <Link href={`/drivers/${d.id}`} className="font-mono text-xs hover:underline">
                     {d.code}

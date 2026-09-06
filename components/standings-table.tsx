@@ -11,8 +11,8 @@ export function StandingsTable({
   href: string;
 }) {
   return (
-    <section className="rounded-xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900">
-      <div className="flex items-center justify-between border-b border-zinc-200 px-4 py-3 dark:border-zinc-800">
+    <section className="rounded-xl border border-zinc-200 bg-white">
+      <div className="flex items-center justify-between border-b border-zinc-200 px-4 py-3">
         <h2 className="font-semibold">{title}</h2>
         <a href={href} className="text-sm text-red-600 hover:underline">
           Full standings
@@ -28,7 +28,7 @@ export function StandingsTable({
         </thead>
         <tbody>
           {rows.map((r) => (
-            <tr key={r.name} className="border-t border-zinc-100 dark:border-zinc-800">
+            <tr key={r.name} className="border-t border-zinc-100">
               <td className="px-4 py-2">{r.position}</td>
               <td className="px-4 py-2">
                 {r.name}

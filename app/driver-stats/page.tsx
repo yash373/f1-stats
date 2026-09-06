@@ -18,7 +18,7 @@ export default async function DriverStatsPage() {
   return (
     <div className="space-y-4">
       <h1 className="text-2xl font-bold">2026 Driver Stats</h1>
-      <div className="overflow-hidden rounded-xl border border-zinc-200 dark:border-zinc-800">
+      <div className="overflow-hidden rounded-xl border border-zinc-200">
         <table className="w-full text-sm">
           <thead>
             <tr className="text-left text-xs uppercase text-zinc-500">
@@ -33,7 +33,7 @@ export default async function DriverStatsPage() {
           </thead>
           <tbody>
             {drivers.map((d) => (
-              <tr key={d.id} className="border-t border-zinc-100 dark:border-zinc-800">
+              <tr key={d.id} className="border-t border-zinc-100">
                 <td className="px-4 py-2">
                   <span
                     className="mr-2 inline-block h-3 w-1 rounded"

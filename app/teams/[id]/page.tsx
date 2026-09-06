@@ -69,7 +69,7 @@ export default async function TeamPage({
             <Link
               key={d.id}
               href={`/drivers/${d.id}`}
-              className="rounded-xl border border-zinc-200 bg-white p-4 hover:border-red-600/50 dark:border-zinc-800 dark:bg-zinc-900"
+              className="rounded-xl border border-zinc-200 bg-white p-4 hover:border-red-600/50"
             >
               <p className="font-semibold">
                 {d.name} <span className="font-mono text-sm text-zinc-500">{d.code}</span>
@@ -87,7 +87,7 @@ export default async function TeamPage({
 
       <section className="space-y-2">
         <h2 className="text-lg font-semibold">2026 race-by-race</h2>
-        <div className="overflow-hidden rounded-xl border border-zinc-200 dark:border-zinc-800">
+        <div className="overflow-hidden rounded-xl border border-zinc-200">
           <table className="w-full text-sm">
             <thead>
               <tr className="text-left text-xs uppercase text-zinc-500">
@@ -99,7 +99,7 @@ export default async function TeamPage({
             </thead>
             <tbody>
               {rounds.map((r) => (
-                <tr key={r.round} className="border-t border-zinc-100 dark:border-zinc-800">
+                <tr key={r.round} className="border-t border-zinc-100">
                   <td className="px-4 py-2">{r.round}</td>
                   <td className="px-4 py-2">
                     <Link href={`/results/${r.round}`} className="hover:underline">

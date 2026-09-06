@@ -117,7 +117,7 @@ export default async function RoundPage({
       {sessionKey !== null && (
         <section className="space-y-2">
           <h2 className="text-lg font-semibold">Position history</h2>
-          <div className="rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
+          <div className="rounded-xl border border-zinc-200 bg-white p-4">
             <LapChart sessionKey={sessionKey} drivers={lapDrivers} />
           </div>
         </section>
@@ -131,7 +131,7 @@ export default async function RoundPage({
               <div key={i} className="flex items-center gap-2 text-xs">
                 <span className="w-12 font-mono">{s.code}</span>
                 <span className="w-24 truncate">{s.compound}</span>
-                <div className="h-2 flex-1 overflow-hidden rounded bg-zinc-200 dark:bg-zinc-800">
+                <div className="h-2 flex-1 overflow-hidden rounded bg-zinc-200">
                   <div
                     className="h-full bg-red-600/70"
                     style={{

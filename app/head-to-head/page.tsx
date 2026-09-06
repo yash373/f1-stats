@@ -12,7 +12,7 @@ export const maxDuration = 60;
 function ScoreBar({ a, b }: { a: number; b: number }) {
   const total = a + b || 1;
   return (
-    <div className="flex h-3 overflow-hidden rounded-full bg-zinc-200 dark:bg-zinc-800">
+    <div className="flex h-3 overflow-hidden rounded-full bg-zinc-200">
       <div className="bg-red-600" style={{ width: `${(a / total) * 100}%` }} />
       <div className="bg-zinc-400" style={{ width: `${(b / total) * 100}%` }} />
     </div>
@@ -45,7 +45,7 @@ export default async function HeadToHeadPage({
         <Link
           key={d.id}
           href={`/head-to-head?d1=${key === "d1" ? d.id : d1}&d2=${key === "d2" ? d.id : d2}`}
-          className={`rounded px-2 py-1 font-mono text-xs ${d.id === current ? "bg-red-600 text-white" : "bg-zinc-200 dark:bg-zinc-800"}`}
+          className={`rounded px-2 py-1 font-mono text-xs ${d.id === current ? "bg-red-600 text-white" : "bg-zinc-200"}`}
         >
           {d.code}
         </Link>
@@ -73,13 +73,13 @@ export default async function HeadToHeadPage({
         <>
           <div className="grid gap-4 md:grid-cols-2">
             {h2h.drivers.map((d, i) => (
-              <div key={i} className="rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
+              <div key={i} className="rounded-xl border border-zinc-200 bg-white p-4">
                 <p className="font-semibold">{d.name}</p>
                 <p className="text-sm text-zinc-500">{d.team} · {d.points} pts</p>
               </div>
             ))}
           </div>
-          <div className="space-y-3 rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
+          <div className="space-y-3 rounded-xl border border-zinc-200 bg-white p-4">
             <div>
               <p className="text-sm">Qualifying: {h2h.quali.d1} – {h2h.quali.d2}</p>
               <ScoreBar a={h2h.quali.d1} b={h2h.quali.d2} />
@@ -89,7 +89,7 @@ export default async function HeadToHeadPage({
               <ScoreBar a={h2h.race.d1} b={h2h.race.d2} />
             </div>
           </div>
-          <div className="overflow-hidden rounded-xl border border-zinc-200 dark:border-zinc-800">
+          <div className="overflow-hidden rounded-xl border border-zinc-200">
             <table className="w-full text-sm">
               <thead>
                 <tr className="text-left text-xs uppercase text-zinc-500">
@@ -102,7 +102,7 @@ export default async function HeadToHeadPage({
               </thead>
               <tbody>
                 {h2h.rounds.map((r) => (
-                  <tr key={r.round} className="border-t border-zinc-100 dark:border-zinc-800">
+                  <tr key={r.round} className="border-t border-zinc-100">
                     <td className="px-4 py-2">{r.round}</td>
                     <td className="px-4 py-2">{r.name}</td>
                     <td className="px-4 py-2 text-right font-mono text-xs">{r.quali[0] ?? "–"} : {r.quali[1] ?? "–"}</td>

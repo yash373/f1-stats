@@ -84,7 +84,7 @@ export default async function DriverPage({
         ].map((s) => (
           <div
             key={s.label}
-            className="rounded-xl border border-zinc-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900"
+            className="rounded-xl border border-zinc-200 bg-white p-3"
           >
             <p className="text-xs uppercase text-zinc-500">{s.label}</p>
             <p className="mt-1 text-xl font-bold">{s.value}</p>
@@ -94,7 +94,7 @@ export default async function DriverPage({
 
       <section className="space-y-2">
         <h2 className="text-lg font-semibold">2026 race-by-race</h2>
-        <div className="overflow-hidden rounded-xl border border-zinc-200 dark:border-zinc-800">
+        <div className="overflow-hidden rounded-xl border border-zinc-200">
           <table className="w-full text-sm">
             <thead>
               <tr className="text-left text-xs uppercase text-zinc-500">
@@ -108,7 +108,7 @@ export default async function DriverPage({
             </thead>
             <tbody>
               {finishes.map((f) => (
-                <tr key={f.round} className="border-t border-zinc-100 dark:border-zinc-800">
+                <tr key={f.round} className="border-t border-zinc-100">
                   <td className="px-4 py-2">{f.round}</td>
                   <td className="px-4 py-2">
                     <Link href={`/results/${f.round}`} className="hover:underline">

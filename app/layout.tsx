@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { ThemeProvider } from "@/components/theme-provider";
 import { MotionProvider } from "@/lib/motion";
 import { Sidebar } from "@/components/sidebar";
 
@@ -22,20 +21,16 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  // Light is the default theme: no `dark` class, so light utilities apply on
-  // first paint with zero JS. The toggle stays hidden until dark mode is
-  // re-verified (see sidebar.tsx).
+  // Light-mode-only site: no theme provider, no theme classes.
   return (
-    <html lang="en" suppressHydrationWarning className="h-full">
-      <body className="min-h-full bg-zinc-50 text-zinc-900 dark:bg-black dark:text-zinc-50">
-        <ThemeProvider>
-          <MotionProvider>
+    <html lang="en" className="h-full">
+      <body className="min-h-full bg-zinc-50 text-zinc-900">
+        <MotionProvider>
           <div className="flex min-h-screen">
             <Sidebar />
             <main className="flex-1 p-6">{children}</main>
           </div>
-          </MotionProvider>
-        </ThemeProvider>
+        </MotionProvider>
       </body>
     </html>
   );

@@ -30,13 +30,12 @@ export function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="flex w-60 shrink-0 flex-col border-r border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950">
+    <aside className="flex w-60 shrink-0 flex-col border-r border-zinc-200 bg-white">
       <div className="flex items-center px-4 py-4">
         <Link href="/" className="flex items-center gap-2 font-semibold">
           <Flag className="h-5 w-5 text-red-600" />
           <span>F1 Dashboard</span>
         </Link>
-        {/* Theme toggle hidden until light mode is rebuilt (dark forced in theme-provider). */}
       </div>
       <nav className="flex-1 overflow-y-auto px-2 pb-4">
         {NAV.map((item) => {
@@ -50,7 +49,7 @@ export function Sidebar() {
                 "block rounded-md px-3 py-2 text-sm",
                 active
                   ? "bg-red-600/10 font-medium text-red-600"
-                  : "text-zinc-600 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800",
+                  : "text-zinc-600 hover:bg-zinc-100",
               )}
             >
               {item.label}

@@ -72,10 +72,10 @@ export default async function RacePacePage() {
         <p className="text-sm text-amber-600">Upstream error: {error}</p>
       ) : (
         <>
-          <div className="rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
+          <div className="rounded-xl border border-zinc-200 bg-white p-4">
             <RacePaceChart rows={rows} />
           </div>
-          <div className="overflow-hidden rounded-xl border border-zinc-200 dark:border-zinc-800">
+          <div className="overflow-hidden rounded-xl border border-zinc-200">
             <table className="w-full text-sm">
               <thead>
                 <tr className="text-left text-xs uppercase text-zinc-500">
@@ -86,7 +86,7 @@ export default async function RacePacePage() {
               </thead>
               <tbody>
                 {rows.map((r) => (
-                  <tr key={r.acronym} className="border-t border-zinc-100 dark:border-zinc-800">
+                  <tr key={r.acronym} className="border-t border-zinc-100">
                     <td className="px-4 py-2 font-mono">{r.acronym}</td>
                     <td className="px-4 py-2 text-right font-mono text-xs">{r.median.toFixed(3)}s</td>
                     <td className="px-4 py-2 text-right">{r.laps}</td>

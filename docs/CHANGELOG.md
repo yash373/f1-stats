@@ -1,5 +1,6 @@
 # Changelog
 
+- 2026-09-06 — Full light-mode conversion: dark variants and theme machinery removed — see `changes/2026-09-06-full-light-mode.md`.
 - 2026-09-06 — Light mode default + full data verification: 74-check harness, future-session and burst fixes — see `changes/2026-09-06-light-mode-data-verification.md`.
 - 2026-09-06 — Hardcoded dark class for reliable first paint — see `changes/2026-09-06-hardcoded-dark-class.md`.
 - 2026-09-06 — Observability + static content: deep health check, error surfacing, de-animated home, main deploy mapping — see `changes/2026-09-06-observability-static-content.md`.
