@@ -5,17 +5,32 @@
 const BASE = process.env.JOLPICA_BASE_URL ?? "https://api.jolpi.ca/ergast/f1";
 const USER_AGENT = "f1-stats/0.1.0 (Next.js full-stack)";
 
+async function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 async function get<T>(path: string, params: Record<string, string | number> = {}): Promise<T> {
   const url = new URL(`${BASE}${path}`);
   for (const [k, v] of Object.entries(params)) url.searchParams.set(k, String(v));
-  const res = await fetch(url.toString(), {
-    headers: { "User-Agent": USER_AGENT, Accept: "application/json" },
-    // Historical data changes rarely; route-level `cached()` sets the TTL.
-    // `no-store` here so Next doesn't implicitly cache upstream fetches.
-    cache: "no-store",
-  });
-  if (!res.ok) throw new Error(`Jolpica ${res.status} for ${url.pathname}`);
-  return (await res.json()) as T;
+  // Jolpica rate-limits bursts (analytics pages fan out per round) — retry 429s with backoff.
+  let lastError: Error = new Error(`Jolpica failed for ${url.pathname}`);
+  for (let attempt = 0; attempt < 4; attempt++) {
+    const res = await fetch(url.toString(), {
+      headers: { "User-Agent": USER_AGENT, Accept: "application/json" },
+      // Historical data changes rarely; route-level `cached()` sets the TTL.
+      // `no-store` here so Next doesn't implicitly cache upstream fetches.
+      cache: "no-store",
+    });
+    if (res.ok) return (await res.json()) as T;
+    if (res.status === 429) {
+      lastError = new Error(`Jolpica 429 for ${url.pathname}`);
+      const retryAfter = Number(res.headers.get("retry-after")) * 1000;
+      await sleep(Math.min(Number.isFinite(retryAfter) && retryAfter > 0 ? retryAfter : 1000 * 2 ** attempt, 8000));
+      continue;
+    }
+    throw new Error(`Jolpica ${res.status} for ${url.pathname}`);
+  }
+  throw lastError;
 }
 
 // ---- Minimal Ergast response shapes (only fields we use) ----

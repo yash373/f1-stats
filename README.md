@@ -1,36 +1,48 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# F1 Dashboard — driver & team stats (unofficial fan project)
 
-## Getting Started
+Next.js full-stack app inspired by formula1dashboard.com. Data: Jolpica-F1 (history, 1950–present)
++ OpenF1 (live timing & telemetry, 2023+). Curated content (tech upgrades, PU elements, crash
+damage) has no open API and is entered via `/admin`.
 
-First, run the development server:
+## Getting started
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+cp .env.example .env.local   # fill DATABASE_URL to enable DB features
+npm install
+npm run dev                  # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Without `DATABASE_URL` the app runs in upstream-direct mode (cached Jolpica/OpenF1 fetches);
+curated pages and `/admin` show pending states.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Database (optional but recommended)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npx prisma migrate deploy            # create tables
+DATABASE_URL=... node scripts/seed-curated.mjs   # seed curated tables from data/curated.json
+```
 
-## Learn More
+Then open `/admin` (needs `ADMIN_SECRET`) to add tech upgrades, PU elements and incidents.
+Race-weekend history sync: `GET /api/cron/sync-history?season=2026` (Bearer `CRON_SECRET`).
 
-To learn more about Next.js, take a look at the following resources:
+## API
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- `GET /api/v1/health` — service + upstream status
+- `GET /api/v1/schedule?season=` — calendar
+- `GET /api/v1/standings?season=&type=drivers|constructors`
+- `GET /api/v1/results?season=&round=&session=race|quali|sprint`
+- `GET /api/v1/head-to-head?season=&d1=&d2=`
+- `GET /api/v1/driver-stats?season=`
+- `GET /api/v1/pit-stops?season=&round=`
+- `GET /api/v1/live?resource=overview|positions|drivers|intervals|stints|weather&session_key=&year=`
+- `GET /api/cron/sync-history?season=` · `GET /api/cron/sync-weekend?year=`
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Deploy (Vercel)
 
-## Deploy on Vercel
+Set env vars: `DATABASE_URL`, `UPSTASH_REDIS_REST_URL/TOKEN` (optional cache),
+`CRON_SECRET`, `ADMIN_SECRET`. Crons are declared in `vercel.json`
+(Mon 06:00 history sync, every 15 min weekend probe).
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Docs
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Per-change notes live in `docs/changes/` (index: `docs/CHANGELOG.md`).
