@@ -54,9 +54,36 @@ export interface ErgastResult {
   status: string;
 }
 
+export interface ErgastQualifyingResult {
+  number: string;
+  position: string;
+  Driver: ErgastDriver;
+  Constructor: ErgastConstructor;
+  Q1?: string;
+  Q2?: string;
+  Q3?: string;
+}
+
+export interface ErgastSprintResult {
+  number: string;
+  position?: string;
+  points: string;
+  Driver: ErgastDriver;
+  Constructor: ErgastConstructor;
+  grid: string;
+  laps: string;
+  status: string;
+}
+
 interface MRData {
   MRData: {
-    RaceTable?: { Races: (ErgastRace & { Results?: ErgastResult[] })[] };
+    RaceTable?: {
+      Races: (ErgastRace & {
+        Results?: ErgastResult[];
+        QualifyingResults?: ErgastQualifyingResult[];
+        SprintResults?: ErgastSprintResult[];
+      })[];
+    };
     DriverTable?: { Drivers: ErgastDriver[] };
     ConstructorTable?: { Constructors: ErgastConstructor[] };
     StandingsTable?: {
@@ -92,6 +119,8 @@ export const jolpica = {
     get<MRData>(`/${season}/${round}/results/`, { limit: 100 }),
   qualifying: (season: string | number, round: string | number) =>
     get<MRData>(`/${season}/${round}/qualifying/`, { limit: 100 }),
+  sprint: (season: string | number, round: string | number) =>
+    get<MRData>(`/${season}/${round}/sprint/`, { limit: 100 }),
   driverStandings: (season: string | number) =>
     get<MRData>(`/${season}/driverstandings/`, { limit: 100 }),
   constructorStandings: (season: string | number) =>

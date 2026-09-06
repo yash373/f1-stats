@@ -24,6 +24,9 @@
 .DS_Store
 *.pem
 
+# editors / notes
+.obsidian/
+
 # debug
 npm-debug.log*
 yarn-debug.log*
