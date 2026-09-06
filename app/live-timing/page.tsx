@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { TrackMap } from "@/components/track-map";
+import { motion } from "@/lib/motion";
 
 interface Session {
   session_key: number;
@@ -188,7 +189,12 @@ export default function LiveTimingPage() {
               const iv = intervals.get(p.driver_number);
               const st = stints.get(p.driver_number);
               return (
-                <tr key={p.driver_number} className="border-t border-zinc-100 dark:border-zinc-800">
+                <motion.tr
+                  key={p.driver_number}
+                  layout
+                  transition={{ type: "spring", stiffness: 350, damping: 32 }}
+                  className="border-t border-zinc-100 dark:border-zinc-800"
+                >
                   <td className="px-4 py-2 font-medium">{p.position}</td>
                   <td className="px-4 py-2">
                     <span
@@ -217,7 +223,7 @@ export default function LiveTimingPage() {
                       <span className="text-zinc-500">–</span>
                     )}
                   </td>
-                </tr>
+                </motion.tr>
               );
             })}
             {tower.length === 0 && !error && (

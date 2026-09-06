@@ -1,5 +1,6 @@
 import { KpiCard } from "@/components/kpi-card";
 import { StandingsTable } from "@/components/standings-table";
+import { Reveal } from "@/lib/motion";
 import { cached, TTL } from "@/lib/cache";
 import { jolpica } from "@/lib/sources/jolpica";
 import { toConstructorRows, toStandingRows, type StandingRow } from "@/lib/normalize";
@@ -41,16 +42,26 @@ export default async function Home() {
       </div>
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-5">
-        <KpiCard title="Schedule" value="52.2%" sub="Season completed" href="/schedule" />
-        <KpiCard title="Fastest Pit Stop" value="1.99s" sub="Best of season" href="/pit-stops" />
-        <KpiCard title="Crash Damage" value="$15.0M" sub="Destructors total" href="/destructors-championship" />
-        <KpiCard title="Used Elements" value="532" sub="Power-unit pool" href="/used-elements" />
-        <KpiCard title="Tech Upgrades" value="370" sub="Tracked parts" href="/tech-updates" />
+        {[
+          <KpiCard key="s" title="Schedule" value="52.2%" sub="Season completed" href="/schedule" />,
+          <KpiCard key="p" title="Fastest Pit Stop" value="1.99s" sub="Best of season" href="/pit-stops" />,
+          <KpiCard key="c" title="Crash Damage" value="$15.0M" sub="Destructors total" href="/destructors-championship" />,
+          <KpiCard key="e" title="Used Elements" value="532" sub="Power-unit pool" href="/used-elements" />,
+          <KpiCard key="t" title="Tech Upgrades" value="370" sub="Tracked parts" href="/tech-updates" />,
+        ].map((card, i) => (
+          <Reveal key={i} delay={i * 0.06}>
+            {card}
+          </Reveal>
+        ))}
       </div>
 
       <div className="grid gap-4 lg:grid-cols-2">
-        <StandingsTable title="Driver Standings" rows={driverRows} href="/driver-standings" />
-        <StandingsTable title="Constructor Standings" rows={teamRows} href="/constructor-standings" />
+        <Reveal>
+          <StandingsTable title="Driver Standings" rows={driverRows} href="/driver-standings" />
+        </Reveal>
+        <Reveal delay={0.08}>
+          <StandingsTable title="Constructor Standings" rows={teamRows} href="/constructor-standings" />
+        </Reveal>
       </div>
     </div>
   );

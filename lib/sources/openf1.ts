@@ -5,12 +5,17 @@ import { fetchJson } from "@/lib/http";
 
 const BASE = process.env.OPENF1_BASE_URL ?? "https://api.openf1.org/v1";
 
-async function get<T>(endpoint: string, params: Record<string, string | number | boolean> = {}): Promise<T> {
+async function get<T>(
+  endpoint: string,
+  params: Record<string, string | number | boolean> = {},
+  timeoutMs = 10000,
+): Promise<T> {
   const url = new URL(`${BASE}/${endpoint}`);
   for (const [k, v] of Object.entries(params)) url.searchParams.set(k, String(v));
   return fetchJson<T>(url.toString(), {
     headers: { Accept: "application/json" },
     cache: "no-store",
+    timeoutMs,
   });
 }
 
@@ -128,9 +133,9 @@ export const openf1 = {
       session_key: sessionKey,
       ...(driverNumber !== undefined ? { driver_number: driverNumber } : {}),
     }),
-  location: (sessionKey: number, driverNumber?: number) =>
+  location: (sessionKey: number, driverNumber?: number, timeoutMs = 60000) =>
     get<OpenF1TrackPoint[]>("location", {
       session_key: sessionKey,
       ...(driverNumber !== undefined ? { driver_number: driverNumber } : {}),
-    }),
+    }, timeoutMs),
 };
