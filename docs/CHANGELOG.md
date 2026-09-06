@@ -1,5 +1,6 @@
 # Changelog
 
+- 2026-09-06 — Hardcoded dark class for reliable first paint — see `changes/2026-09-06-hardcoded-dark-class.md`.
 - 2026-09-06 — Observability + static content: deep health check, error surfacing, de-animated home, main deploy mapping — see `changes/2026-09-06-observability-static-content.md`.
 - 2026-09-06 — Stability fix batch: points glitch, dark-first, pit durations, live timing, serverless budgets — see `changes/2026-09-06-stability-fix-batch.md`.
 - 2026-09-06 — Vercel Prisma build fix: generate client in build + postinstall — see `changes/2026-09-06-vercel-prisma-build-fix.md`.
