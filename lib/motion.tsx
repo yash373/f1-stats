@@ -24,25 +24,34 @@ export function Reveal({ children, delay = 0 }: { children: ReactNode; delay?: n
 }
 
 // Animated counter for points and KPIs.
+// NOTE: `format` must be referentially stable — an inline arrow recreated per
+// render retriggers the effect below and restarts the animation forever.
+const defaultFormat = (n: number) => Math.round(n).toString();
+
 export function AnimatedNumber({
   value,
-  format = (n: number) => Math.round(n).toString(),
+  format = defaultFormat,
 }: {
   value: number;
   format?: (n: number) => string;
 }) {
   const ref = useRef<HTMLSpanElement>(null);
   const inView = useInView(ref, { once: true, margin: "-20px" });
-  const [display, setDisplay] = useState(format(0));
+  const formatRef = useRef(format);
+  const [display, setDisplay] = useState(() => format(0));
+  useEffect(() => {
+    formatRef.current = format;
+  }, [format]);
   useEffect(() => {
     if (!inView) return;
+    setDisplay(formatRef.current(0));
     const controls = animate(0, value, {
-      duration: 1,
+      duration: 0.8,
       ease: "easeOut",
-      onUpdate: (v) => setDisplay(format(v)),
+      onUpdate: (v) => setDisplay(formatRef.current(v)),
     });
     return () => controls.stop();
-  }, [inView, value, format]);
+  }, [inView, value]);
   return <span ref={ref}>{display}</span>;
 }
 

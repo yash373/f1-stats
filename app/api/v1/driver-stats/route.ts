@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getDriverStats } from "@/lib/analytics";
 
 export const revalidate = 3600;
+export const maxDuration = 60;
 
 // GET /api/v1/driver-stats?season=2026
 export async function GET(req: Request) {

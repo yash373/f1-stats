@@ -13,6 +13,7 @@ import { findRaceSession } from "@/lib/openf1-mapping";
 import { openf1 } from "@/lib/sources/openf1";
 
 export const revalidate = 3600;
+export const maxDuration = 60;
 
 async function getRoundData(season: number, round: string) {
   return cached(`round-${season}-${round}`, TTL.season, async () => {

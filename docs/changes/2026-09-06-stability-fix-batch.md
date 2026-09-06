@@ -1,0 +1,11 @@
+# 2026-09-06 — Stability fix batch (points, dark-first, pits, live, budgets)
+
+Reported: points glitching site-wide, broken light/dark, 502s on many pages, missing pit durations, broken live timing, constructors glitching.
+
+- **Points/constructors glitch** (`lib/motion.tsx`): `AnimatedNumber` recreated its default `format` arrow every render, retriggering the animation effect endlessly — points flickered and never settled everywhere `StandingsTable` is used. Fixed with a module-level stable formatter + ref indirection (effect deps now `[inView, value]` only). Follow-up lint error (ref write during render) fixed by assigning in an effect.
+- **Dark-mode-first**: forced dark (`enableSystem={false}`), hid the sidebar toggle until light mode is rebuilt. Light-mode rebuild is a separate follow-up.
+- **Pit stops**: (1) `m:ss.mmm` durations (red-flag stops, e.g. 21 of 65 in R12) parsed to seconds in `parseStopDuration` + non-finite filter — previously `NaN` broke fastest/averages/sorts; (2) page defaulted to the last *scheduled* round (R23, future) — now defaults to latest round with published data via `getLatestRoundWithPitStops` + fallback link in the empty state.
+- **Live timing**: `/api/v1/track` 400d on `session_key=latest` (NaN) leaving the map spinner forever — page now resolves the latest numeric key from the session list; intervals window anchors at session start for completed sessions so gaps render off-weekend too.
+- **Serverless budgets**: Jolpica 429 retry capped (3 attempts, ≤3s waits) to fit function timeouts; `maxDuration = 60` on aggregate APIs (head-to-head, driver-stats) and fan-out pages (consistency, h2h, driver-stats, track-dna, drivers/[id], teams/[id], results/[round]).
+- **Fix 0 diagnosis**: local baseline all-200; prod URL sits behind Vercel SSO so external repro is impossible — 502s are prod-environment-specific. If they persist after deploy: check function logs for the upstream error string, set Upstash Redis env (cold starts currently bypass all caching), provision `DATABASE_URL` + run `sync-history` to enable DB-backed reads.
+- Verify: `npm run lint` clean; `npm run build` green; smoke 6/6 200 incl. R12 pits (65 stops, fastest Colapinto 12.092s).

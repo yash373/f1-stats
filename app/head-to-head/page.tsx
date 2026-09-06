@@ -7,6 +7,7 @@ import { getHeadToHead } from "@/lib/analytics";
 export const revalidate = 3600;
 
 export const metadata = { title: "Head To Head" };
+export const maxDuration = 60;
 
 function ScoreBar({ a, b }: { a: number; b: number }) {
   const total = a + b || 1;

@@ -1,5 +1,6 @@
 # Changelog
 
+- 2026-09-06 — Stability fix batch: points glitch, dark-first, pit durations, live timing, serverless budgets — see `changes/2026-09-06-stability-fix-batch.md`.
 - 2026-09-06 — Vercel Prisma build fix: generate client in build + postinstall — see `changes/2026-09-06-vercel-prisma-build-fix.md`.
 - 2026-09-06 — Daily crons + light mode fix: all jobs once-daily, class-based dark variant — see `changes/2026-09-06-daily-crons-light-mode.md`.
 - 2026-09-06 — Tracks A–D geek-grade: reliability, telemetry pipeline, epic graphs, motion system — see `changes/2026-09-06-tracks-a-d-geek-grade.md`.

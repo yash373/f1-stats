@@ -181,8 +181,27 @@ export interface PitStopData {
   teams: { teamId: string; team: string; stops: number; avg: number; best: number }[];
 }
 
-export async function getPitStops(season: number, round: number): Promise<PitStopData> {
-  return cached(`pitstops-${season}-${round}`, TTL.season, async () => {
+// Latest round with published pit-stop data. The schedule includes future
+// rounds, so defaulting to the last scheduled round lands on empty data.
+export async function getLatestRoundWithPitStops(season: number): Promise<number> {
+  return cached(`pitstops-latest-${season}`, TTL.season, async () => {
+    const rounds = await getSeasonRounds(season);
+    const past = rounds.filter((r) => new Date(r.date).getTime() <= Date.now());
+    const candidates = [...past.map((r) => r.round)].sort((a, b) => b - a);
+    for (const round of candidates) {
+      try {
+        const res = await jolpica.pitstops(season, round);
+        const stops = res.MRData.RaceTable?.Races[0]?.PitStops ?? [];
+        if (stops.length > 0) return round;
+      } catch {
+        // Keep walking back — a single failed round shouldn't block the page.
+      }
+    }
+    return candidates[0] ?? 1;
+  });
+}
+
+export async function getPitStops(season: number, round: number): Promise<PitStopData> {  return cached(`pitstops-${season}-${round}`, TTL.season, async () => {
     const [pitRes, raceRes] = await Promise.all([
       jolpica.pitstops(season, round),
       jolpica.results(season, round).catch(() => null),
